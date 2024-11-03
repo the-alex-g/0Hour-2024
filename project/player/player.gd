@@ -1,11 +1,22 @@
 class_name Player
 extends CharacterBody2D
 
+signal health_updated(new_health: int)
+signal gained_point
+
 const GRAVITY := 15
 
 @export var speed := 200.0
 @export var jump_strength := 200.0
-@export var health := 100.0
+@export var health := 100 :
+	set(value):
+		if value > 0:
+			health = value
+		else:
+			health = 0
+		health_updated.emit(health)
+
+var _can_defend := true
 
 @onready var _weapon : Area2D = $Weapon
 
@@ -20,30 +31,42 @@ func _physics_process(_delta: float) -> void:
 		velocity.y = -jump_strength
 	
 	var action := Input.get_vector("weapon_left", "weapon_right", "weapon_up", "weapon_down")
-	if action != Vector2.ZERO:
+	
+	if $Weapon/AnimatedSprite2D.animation == "defend":
+		for area: Area2D in _weapon.get_overlapping_areas():
+			if area is Projectile:
+				area.queue_free()
+				gained_point.emit()
+	elif $Weapon/AnimatedSprite2D.animation == "attack":
+		for body: PhysicsBody2D in _weapon.get_overlapping_bodies():
+			if body is Enemy:
+				body.queue_free()
+				gained_point.emit()
+				gained_point.emit()
+	elif action != Vector2.ZERO:
 		_weapon.rotation = action.angle()
-		if $Weapon/AnimatedSprite2D.animation == "default":
-			if Input.is_action_pressed("shift"):
-				_defend()
-			else:
-				_attack()
+		if Input.is_action_pressed("shift") and _can_defend:
+			_defend()
+		else:
+			_attack()
 	
 	move_and_slide()
 
 
 func _defend() -> void:
 	$Weapon/AnimatedSprite2D.play("defend")
-	for area: Area2D in _weapon.get_overlapping_areas():
-		if area is Projectile:
-			area.queue_free()
+	_can_defend = false
+	await get_tree().create_timer(1.5).timeout
+	_can_defend = true
 
 
 func _attack() -> void:
 	$Weapon/AnimatedSprite2D.play("attack")
-	for body: PhysicsBody2D in _weapon.get_overlapping_bodies():
-		if body is Enemy:
-			body.queue_free()
 
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	$Weapon/AnimatedSprite2D.play("default")
+
+
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, 8, Color.BLACK)

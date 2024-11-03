@@ -31,6 +31,10 @@ func _attack():
 	projectile.global_position = global_position
 	projectile.target = target.global_position
 	
-	_cooldown_timer.start(cooldown_time)
+	_cooldown_timer.start(cooldown_time + randf() - 0.5)
 	await _cooldown_timer.timeout
 	_can_attack = true
+
+
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, 8, Color.BLACK)

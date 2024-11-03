@@ -12,3 +12,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
 		body.health -= 5
 		queue_free()
+
+
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, 4, Color.ORANGE_RED)
