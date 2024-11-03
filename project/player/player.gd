@@ -22,21 +22,28 @@ func _physics_process(_delta: float) -> void:
 	var action := Input.get_vector("weapon_left", "weapon_right", "weapon_up", "weapon_down")
 	if action != Vector2.ZERO:
 		_weapon.rotation = action.angle()
-		if Input.is_action_pressed("shift"):
-			_defend()
-		else:
-			_attack()
+		if $Weapon/AnimatedSprite2D.animation == "default":
+			if Input.is_action_pressed("shift"):
+				_defend()
+			else:
+				_attack()
 	
 	move_and_slide()
 
 
 func _defend() -> void:
+	$Weapon/AnimatedSprite2D.play("defend")
 	for area: Area2D in _weapon.get_overlapping_areas():
 		if area is Projectile:
 			area.queue_free()
 
 
 func _attack() -> void:
+	$Weapon/AnimatedSprite2D.play("attack")
 	for body: PhysicsBody2D in _weapon.get_overlapping_bodies():
 		if body is Enemy:
 			body.queue_free()
+
+
+func _on_animated_sprite_2d_animation_finished() -> void:
+	$Weapon/AnimatedSprite2D.play("default")

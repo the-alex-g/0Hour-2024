@@ -1,11 +1,59 @@
-[gd_scene load_steps=4 format=3 uid="uid://c134in5u4i6pa"]
+[gd_scene load_steps=10 format=3 uid="uid://c134in5u4i6pa"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_nuqu1"]
+[ext_resource type="Texture2D" uid="uid://dvrvqtsykd6w0" path="res://sword.png" id="2_8ad22"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3xx4w"]
+size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tcxgj"]
-size = Vector2(9, 20)
+size = Vector2(4, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fbbsh"]
+atlas = ExtResource("2_8ad22")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_syn6e"]
+atlas = ExtResource("2_8ad22")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pfkly"]
+atlas = ExtResource("2_8ad22")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c142p"]
+atlas = ExtResource("2_8ad22")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xy0lq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fbbsh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_syn6e")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pfkly")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c142p")
+}],
+"loop": false,
+"name": &"defend",
+"speed": 5.0
+}]
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_nuqu1")
@@ -16,5 +64,13 @@ shape = SubResource("RectangleShape2D_3xx4w")
 [node name="Weapon" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Weapon"]
-position = Vector2(15.5, 0)
+position = Vector2(10, 0)
 shape = SubResource("RectangleShape2D_tcxgj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Weapon"]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_xy0lq")
+autoplay = "default"
+offset = Vector2(2, -0.5)
+
+[connection signal="animation_finished" from="Weapon/AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
