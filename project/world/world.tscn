@@ -18,5 +18,8 @@ shape = SubResource("RectangleShape2D_2qwv1")
 
 [node name="Player" parent="." instance=ExtResource("1_6g10a")]
 position = Vector2(493, 192)
+speed = 300.0
+jump_strength = 400.0
 
 [node name="Enemy" parent="." instance=ExtResource("2_m01s7")]
+position = Vector2(288, 347)
